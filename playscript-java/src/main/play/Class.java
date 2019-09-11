@@ -10,11 +10,15 @@ public class Class extends Scope implements Type{
     //protected List<Function> functions = new LinkedList<Function>();
 
     //父类
-    private Class parentClass = null;
+    private Class parentClass = null; //= rootClass;
 
     protected Class(String name, ParserRuleContext ctx) {
         this.name = name;
         this.ctx = ctx;
+
+        thisRef = new This(this,ctx);
+        thisRef.type = this;
+
     }
 
     protected Class getParentClass(){
@@ -23,8 +27,26 @@ public class Class extends Scope implements Type{
 
     protected void setParentClass(Class theClass){
         parentClass = theClass;
+
+        //其实superRef引用的也是自己
+        superRef = new Super(parentClass,ctx);
+        superRef.type = parentClass;
     }
 
+
+    //这个类的This变量
+    private This thisRef = null;
+
+    private Super superRef = null;
+
+    //最顶层的基类
+    private static Class rootClass = new Class("Object", null);
+
+    public This getThis(){
+        return thisRef;
+    }
+
+    public Super getSuper() {return superRef;}
 
     @Override
     public String toString(){
@@ -101,7 +123,6 @@ public class Class extends Scope implements Type{
         return rtn;
     }
 
-
     /**
      * 是否包含某个Symbol。这时候要把父类的成员考虑进来。
      * @param symbol
@@ -109,6 +130,11 @@ public class Class extends Scope implements Type{
      */
     @Override
     protected boolean containsSymbol(Symbol symbol){
+        //this关键字
+        if(symbol == thisRef || symbol == superRef){
+            return true;
+        }
+
         boolean rtn = false;
         rtn = symbols.contains(symbol);
         if (!rtn && parentClass != null){

@@ -274,7 +274,7 @@ expression
     | expression bop='.'
       ( IDENTIFIER
       | functionCall
-    //   | THIS
+      | THIS
     //   | NEW nonWildcardTypeArguments? innerCreator
     //   | SUPER superSuffix
     //   | explicitGenericInvocation
@@ -313,7 +313,7 @@ expression
 primary
     : '(' expression ')'
     | THIS
-    // | SUPER
+    | SUPER
     | literal
     | IDENTIFIER
     // | typeTypeOrVoid '.' CLASS
